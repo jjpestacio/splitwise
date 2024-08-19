@@ -5,6 +5,7 @@ import typer
 
 from .client import SplitwiseClient
 from .parsers import CsvFormat, parse_csv
+from .users import UserId
 
 cli = typer.Typer()
 
@@ -32,6 +33,14 @@ def add_shared_expenses(
         str,
         typer.Option(prompt=True, help="The API key of the Splitwise app."),
     ],
+    payer_id: Annotated[
+        int,
+        typer.Option(help="The ID of the user who paid for the transactions."),
+    ],
+    contributor_id: Annotated[
+        int,
+        typer.Option(help="The ID of the user who contributed to the transactions."),
+    ],
     csv_format: Annotated[
         CsvFormat,
         typer.Option(help="The transactions format of the CSV file."),
@@ -54,4 +63,9 @@ def add_shared_expenses(
             f"Would you like to add this transaction: {transaction}?"
         ):
             typer.echo(f"Adding shared expense: {transaction}")
-            client.add_shared_expense(transaction=transaction)
+
+            client.add_shared_expense(
+                transaction=transaction,
+                payer_id=UserId(payer_id),
+                contributor_id=UserId(contributor_id),
+            )
